@@ -32,7 +32,7 @@ object IOFunctions {
       .save(s"$outputPath")
 
   private def splitByDelimiters(l: String): Array[String] =
-    l.split("[,\\t]")
+    l.split("[,\t]")
 
   private def transformToIntOption(l: Array[String]) =
     l.map(_.toIntOption)
@@ -42,8 +42,8 @@ object IOFunctions {
 
   private def transformEmptyLineInZero(l: Array[Option[Int]]) =
     l match {
-      case Array(Some(key), None) => (key, 0)
       case Array(Some(key), Some(value)) => (key, value)
+      case Array(Some(key)) => (key, 0)
     }
 
   def readRDD(sc: SparkContext, inputPath: String): RDD[KeyPair] = {

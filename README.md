@@ -3,7 +3,6 @@
 Application reads multiple CSV or TSV files in the same directory handling their extensions particularities. Group By the key and value in all file sources and counting them, keeping only those with Odd count.
 After that Writes all content in a new TSV file.
 
-
 ## Usage
 **Test Application:**
 ```

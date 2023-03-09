@@ -47,7 +47,7 @@ object VigilGeneralDataEngineerApp {
   }
 
   /**
-   * provides the execution of Data processing flow utilizing Spark RDD API
+   * Provides the execution of Data processing flow utilizing Spark RDD API
    *
    * @param config Program variables configuration (input, output and awsProfile)
    * */

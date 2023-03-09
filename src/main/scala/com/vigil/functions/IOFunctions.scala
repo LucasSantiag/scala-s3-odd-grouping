@@ -4,15 +4,14 @@ import com.vigil.KeyPair
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 
 object IOFunctions {
-  private lazy val S3_PREFIX: String = "s3a://"
   private lazy val TSV_EXTENSION = "tsv"
 
   private val dataSchema: StructType = StructType(Array(
-    StructField("key", StringType, true),
-    StructField("value", IntegerType, true),
+    StructField("key", StringType, nullable = true),
+    StructField("value", IntegerType, nullable = true),
   ))
 
   private def getDelimiterByType(fileType: String) = if (fileType == TSV_EXTENSION) "\t" else ","
@@ -22,17 +21,18 @@ object IOFunctions {
       .option("delimiter", getDelimiterByType(fileType))
       .option("header", "true")
       .schema(dataSchema)
-      .load(s"$S3_PREFIX$inputPath/*${fileType}")
+      .load(s"$inputPath/*.${fileType}")
   }
 
   def writeTsv(df: DataFrame, outputPath: String): Unit =
     df.write.format("csv")
       .option("header", "true")
       .option("delimiter", "\t")
-      .save(s"$S3_PREFIX$outputPath")
+      .mode(SaveMode.Overwrite)
+      .save(s"$outputPath")
 
   private def splitByDelimiters(l: String): Array[String] =
-    l.split(Array(',', '\t'))
+    l.split("[,\\t]")
 
   private def transformToIntOption(l: Array[String]) =
     l.map(_.toIntOption)
@@ -48,7 +48,7 @@ object IOFunctions {
 
   def readRDD(sc: SparkContext, inputPath: String): RDD[KeyPair] = {
     sc
-      .textFile(inputPath)
+      .textFile(s"$inputPath/*")
       .map(splitByDelimiters)
       .map(transformToIntOption)
       .filter(removeRandomStringHeaders)
@@ -61,5 +61,5 @@ object IOFunctions {
   def writeTsvFromRDD(rdd: RDD[KeyPair], outputPath: String): Unit =
     rdd
       .map(toTsvFormat)
-      .saveAsTextFile(s"$outputPath.tsv")
+      .saveAsTextFile(s"$outputPath")
 }

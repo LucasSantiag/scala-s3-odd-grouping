@@ -18,7 +18,7 @@ object VigilGeneralDataEngineerApp {
   def main(args: Array[String]): Unit = {
     OParser.parse(ConfigParser.argParser, args, Config()) match {
       case Some(config) =>
-        executeWithDataFrameAPI(config)
+        executeWithRDDAPI(config)
       case None =>
         throw new IllegalArgumentException("Missing required arguments.")
     }
@@ -33,12 +33,13 @@ object VigilGeneralDataEngineerApp {
     val spark = createSparkSession(config)
 
     val dataframe = {
-      val csvDataFrame = readFileByType(spark, "tsv", config.input)
-      val tsvDataFrame = readFileByType(spark, "csv", config.input)
+      val csvDataFrame = readFileByType(spark, "csv", config.input)
+      val tsvDataFrame = readFileByType(spark, "tsv", config.input)
       csvDataFrame.union(tsvDataFrame)
     }
 
-    val groupedByKeyDataFrame = occurrencesByKey(dataframe)
+    val filledDataFrame = fillEmptyValues(dataframe)
+    val groupedByKeyDataFrame = occurrencesByKey(filledDataFrame)
     val filterByOddCountDataFrame = filterByOddCount(groupedByKeyDataFrame)
     val finalDataFrame = getPairColumns(filterByOddCountDataFrame)
 

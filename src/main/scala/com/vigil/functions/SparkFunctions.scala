@@ -14,6 +14,8 @@ object SparkFunctions {
     SparkSession.builder()
       .appName("VigilGeneralDataEngineerApp")
       .master("local[*]")
+      .config("spark.hadoop.fs.s3a.endpoint", "http://localhost:4566")
+      .config("spark.hadoop.fs.s3a.path.style.access", "true")
       .config("spark.hadoop.fs.s3a.aws.credentials.provider", "com.amazonaws.auth.profile.ProfileCredentialsProvider")
       .config("spark.hadoop.fs.s3a.aws.credentials.profile", config.awsProfile)
       .getOrCreate()

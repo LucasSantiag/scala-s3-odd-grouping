@@ -7,6 +7,14 @@ import org.apache.spark.sql.functions.{col, count}
 
 object AggregateFunctions {
   /**
+   * Fill all empty values with Zero value
+   *
+   * @param df DataFrame to fill empty values
+   * @return DataFrame with zeros instead of empty values
+   */
+  def fillEmptyValues(df: DataFrame): DataFrame =
+    df.na.fill(0)
+  /**
    * Group all lines by (keys and value) and count how many there are in the DataFrame
    *
    * @param df DataFrame to groupBy and count
@@ -24,7 +32,7 @@ object AggregateFunctions {
    * @return DataFrame with only odd counts
    */
   def filterByOddCount(df: DataFrame): DataFrame =
-    df.filter(col("count(value)").%(2).===(0))
+    df.filter(col("count(value)").%(2).=!=(0))
 
   /**
    * Select desired columns to output file
@@ -53,12 +61,12 @@ object AggregateFunctions {
    * @return rdd with only odd counts
    */
   def filterByOddCountRDD(rdd: RDD[(KeyPair, Int)]): RDD[((Int, Int), Int)] =
-    rdd.filter(line => line._2 % 2 == 0)
+    rdd.filter(line => line._2 % 2 != 0)
 
   /**
    * Select desired fields to output file
    *
-   * @param rdd
+   * @param rdd RDD
    * @return RDD with only key and value fields
    */
   def getPairColumnsRDD(rdd: RDD[(KeyPair, Int)]): RDD[KeyPair] =

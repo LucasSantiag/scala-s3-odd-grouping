@@ -37,7 +37,7 @@ It was developed two approaches for the exercise. Firstly I started with DataFra
 
 
 ### *VigilGeneralDataEngineerApp.executeWithRDDAPI @ 54*:
-![alt text](dag-df.png)
+![alt text](dag-rdd.png)
 - This other approach execute with two Stages, because off reduceByKey (which is better than groupByKey)
 - And executed in 0.6 seconds on my local machine*
 

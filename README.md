@@ -41,3 +41,7 @@ It was developed two approaches for the exercise. Firstly I started with DataFra
 - And executed in 0.6 seconds on my local machine*
 
 *These times are not that relevant because the files sizes are too small
+
+
+## TODO
+- [ ] Create SparkSession by Environment

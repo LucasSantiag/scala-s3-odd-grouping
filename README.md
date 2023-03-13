@@ -30,7 +30,7 @@ It was developed two approaches for the exercise. Firstly I started with DataFra
 
 ### *VigilGeneralDataEngineerApp.executeWithDataFrameAPI @ 32*:
 ![alt text](dag-df.png)
-- This approach executes in one Stage, so there are no shuffling
+- This approach executes in one Stage
 - And executes with all optimization of Catalyst
 - Processed in 0.9 seconds on my local machine*
 

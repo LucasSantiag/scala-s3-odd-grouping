@@ -45,4 +45,3 @@ It was developed two approaches for the exercise. Firstly I started with DataFra
 
 ## TODO
 - [ ] Create SparkSession by Environment
-- [ ] Improve 

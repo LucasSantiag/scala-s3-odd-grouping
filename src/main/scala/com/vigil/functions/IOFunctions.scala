@@ -1,6 +1,7 @@
 package com.vigil.functions
 
 import com.vigil.KeyPair
+import com.vigil.functions.RDDHelpersFunctions._
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
@@ -53,45 +54,6 @@ object IOFunctions {
       .save(s"$outputPath")
 
   /**
-   * Split the String based on CSV or TSV delimiters
-   *
-   * @param l line parameter to apply regex to split
-   * @return Split line as an Array[String]
-   */
-  private def splitByDelimiters(l: String): Array[String] =
-    l.split("[,\t]")
-
-  /**
-   * Transform each element to an Option of Integer to just use numeric values
-   *
-   * @param l Array of elements in the RDD line
-   * @return Each element wrapped in Option monad
-   */
-  private def transformToIntOption(l: Array[String]) =
-    l.map(_.toIntOption)
-
-  /**
-   * Check all lines that are fully not Integers
-   *
-   * @param l Array of element in the RDD line
-   * @return True if all elements are not Integers
-   */
-  private def removeRandomStringHeaders(l: Array[Option[Int]]) =
-    l.forall(_.nonEmpty)
-
-  /**
-   * Check for Integers Tuple and apply zero to any value Null
-   *
-   * @param l Array of element in the RDD line
-   * @return Returns key and 0 if the value is null/empty and return key and value for filled values
-   */
-  private def transformEmptyLineInZero(l: Array[Option[Int]]) =
-    l match {
-      case Array(Some(key), Some(value)) => (key, value)
-      case Array(Some(key)) => (key, 0)
-    }
-
-  /**
    * Read input path as an RDD, ignoring all random headers and converting any empty value in zero.
    *
    * @param sc SparkContext
@@ -102,19 +64,9 @@ object IOFunctions {
     sc
       .textFile(s"$inputPath/*")
       .map(splitByDelimiters)
-      .map(transformToIntOption)
-      .filter(removeRandomStringHeaders)
+      .flatMap(removeRandomStringHeaders)
       .map(transformEmptyLineInZero)
   }
-
-  /**
-   * Transform Integer Tuple in a string concatenated by \t (tsv delimiter)
-   *
-   * @param pair KeyPair (Int, Int)
-   * @return String concatenated by delimiter
-   */
-  private def toTsvFormat(pair: KeyPair) =
-    s"${pair._1}\t${pair._2}"
 
   /**
    * Write a RDD[(Int, Int)] in a TSV formatted file
